@@ -13,8 +13,8 @@ from trl import SFTTrainer
 from unsloth import FastLanguageModel
 from dotenv import load_dotenv
 
-from data_formatter import DataFormatter
-from config import TrainingConfig
+from phase1.data_formatter import DataFormatter
+from phase1.config import TrainingConfig
 
 
 class LLMTrainer:

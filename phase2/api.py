@@ -90,6 +90,7 @@ class TrainingConfig(BaseModel):
 class TrainRequest(BaseModel):
     """Training job request"""
     dataset_filename: str = Field(..., description="Filename of uploaded dataset")
+    job_id: Optional[str] = Field(default=None, description="Job ID from upload (reuse if provided)")
     config: Optional[TrainingConfig] = Field(default=None, description="Training configuration")
     job_name: Optional[str] = Field(default=None, description="Optional job name")
 
@@ -219,8 +220,8 @@ async def start_training(request: TrainRequest):
     
     Returns job_id for tracking progress
     """
-    # Generate job ID
-    job_id = str(uuid.uuid4())
+    # Use provided job_id or generate new one
+    job_id = request.job_id or str(uuid.uuid4())
     
     # Get dataset path
     dataset_path = storage.get_dataset_path(job_id, request.dataset_filename)

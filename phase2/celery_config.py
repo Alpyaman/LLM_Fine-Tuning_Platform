@@ -3,8 +3,15 @@ Celery Configuration
 """
 
 import os
+import sys
+from pathlib import Path
 from celery import Celery
 from dotenv import load_dotenv
+
+# Add parent directory to path
+parent_dir = Path(__file__).resolve().parent.parent
+if str(parent_dir) not in sys.path:
+    sys.path.insert(0, str(parent_dir))
 
 load_dotenv()
 
@@ -19,7 +26,7 @@ celery_app = Celery(
     "llm_training",
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["celery_worker"]
+    include=["phase2.celery_worker"]
 )
 
 # Celery configuration
@@ -38,5 +45,5 @@ celery_app.conf.update(
 
 # Task routes (optional - for multiple queues)
 celery_app.conf.task_routes = {
-    "celery_worker.train_model": {"queue": "training"},
+    "phase2.celery_worker.train_model": {"queue": "training"},
 }

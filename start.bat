@@ -30,10 +30,10 @@ echo.
 echo To complete setup, open 2 MORE terminals:
 echo.
 echo Terminal 2 - Celery Worker:
-echo   celery -A celery_config worker --loglevel=info -Q training -P solo
+echo   celery -A phase2.celery_config worker --loglevel=info -Q training -P solo
 echo.
 echo Terminal 3 - FastAPI Server:
-echo   python api.py
+echo   python -m phase2.api
 echo.
 echo ========================================
 echo Access Points:
@@ -49,11 +49,11 @@ set /p START="Start Celery Worker and API automatically? (y/n): "
 if /i "%START%"=="y" (
     echo.
     echo Starting Celery Worker...
-    start "Celery Worker" cmd /k "celery -A celery_config worker --loglevel=info -Q training -P solo"
+    start "Celery Worker" cmd /k "celery -A phase2.celery_config worker --loglevel=info -Q training -P solo"
     timeout /t 2 >nul
     
     echo Starting FastAPI Server...
-    start "FastAPI Server" cmd /k "python api.py"
+    start "FastAPI Server" cmd /k "python -m phase2.api"
     
     echo.
     echo Services started in separate windows!

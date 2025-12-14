@@ -3,10 +3,17 @@ Celery Worker - Wraps Phase 1 training script as async task
 """
 
 import os
+import sys
 import traceback
 from pathlib import Path
 from datetime import datetime
 from celery import Task
+
+# Add parent directory to path to enable cross-phase imports
+parent_dir = Path(__file__).resolve().parent.parent
+if str(parent_dir) not in sys.path:
+    sys.path.insert(0, str(parent_dir))
+
 from phase2.celery_config import celery_app
 
 # Import Phase 1 training components
@@ -26,7 +33,7 @@ class TrainingTask(Task):
         print(f"✅ Task {task_id} completed successfully")
 
 
-@celery_app.task(bind=True, base=TrainingTask, name="celery_worker.train_model")
+@celery_app.task(bind=True, base=TrainingTask, name="phase2.celery_worker.train_model")
 def train_model(
     self,
     data_path: str,
@@ -195,7 +202,7 @@ def train_model(
         raise
 
 
-@celery_app.task(name="celery_worker.health_check")
+@celery_app.task(name="phase2.celery_worker.health_check")
 def health_check() -> dict:
     """Simple health check task"""
     return {

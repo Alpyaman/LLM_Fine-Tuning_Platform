@@ -4,10 +4,16 @@ Provides REST API for managing training jobs
 """
 
 import os
+import sys
 import uuid
 from datetime import datetime
 from typing import Optional, List
 from pathlib import Path
+
+# Add parent directory to path to enable cross-phase imports
+parent_dir = Path(__file__).resolve().parent.parent
+if str(parent_dir) not in sys.path:
+    sys.path.insert(0, str(parent_dir))
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
@@ -243,7 +249,7 @@ async def start_training(request: TrainRequest):
     try:
         # Queue the training task
         task = celery_app.send_task(
-            "celery_worker.train_model",
+            "phase2.celery_worker.train_model",
             args=[dataset_path, output_dir, config_dict],
             task_id=job_id
         )
@@ -409,7 +415,7 @@ async def download_model(job_id: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "api:app",
+        "phase2.api:app",
         host="0.0.0.0",
         port=8000,
         reload=True
